@@ -1,6 +1,6 @@
 # Terminal Chess Game
 
-A two-player chess game that runs in the terminal, written in C++ with a clean, modular architecture.
+A two-player chess game that runs in the terminal, written in C++ with a clean, modular architecture featuring a **separated chess engine and user interface**.
 
 ## Features
 
@@ -11,14 +11,31 @@ A two-player chess game that runs in the terminal, written in C++ with a clean, 
 - Intuitive coordinate-based move input (e.g., A2->A3)
 - Helpful error messages for invalid moves
 - Clean terminal display with ASCII board
+- **Separated chess engine from UI** for easy integration and testing
 - **Modular, well-organized codebase** for easy maintenance and extension
+
+## Architecture Overview
+
+The codebase has been designed with a **clear separation between the chess engine and the user interface**:
+
+### **ChessPP** - Pure Chess Engine
+- **Independent chess engine** with no UI dependencies
+- Clean API for move execution and game state queries
+- Comprehensive move validation and game logic
+- Can be easily integrated into different UIs (terminal, GUI, web, etc.)
+
+### **CommandLineDisplay** - Terminal Interface
+- Handles all terminal input/output
+- Uses ChessPP as the underlying chess engine
+- Manages user interaction and display formatting
+- Complete separation from engine logic
 
 ## Project Structure
 
-The codebase has been refactored for better organization and maintainability:
-
 ```
 ├── include/                 # Header files
+│   ├── chesspp.h           # Chess engine class
+│   ├── command_line_display.h # Terminal interface class
 │   ├── types.h             # Core types and enums
 │   ├── move.h              # Move class
 │   ├── move_parser.h       # Move parsing utilities
@@ -27,9 +44,7 @@ The codebase has been refactored for better organization and maintainability:
 │   ├── path_validator.h    # Path validation utilities
 │   ├── chessboard.h        # Chess board class
 │   ├── game_state.h        # Game state management
-│   ├── board_renderer.h    # Display logic
 │   ├── move_validator.h    # Move validation logic
-│   ├── chess_game.h        # Main game class
 │   └── pieces/             # Individual piece classes
 │       ├── pawn.h
 │       ├── rook.h
@@ -38,38 +53,69 @@ The codebase has been refactored for better organization and maintainability:
 │       ├── queen.h
 │       └── king.h
 ├── src/                    # Source files
-│   ├── utils/              # Utility classes
-│   ├── pieces/             # Piece implementations
-│   ├── board/              # Board-related classes
-│   └── game/               # Game logic classes
-├── main.cpp                # Entry point
-└── Makefile               # Build configuration
+│   ├── game/              # Chess engine implementation
+│   │   ├── chesspp.cpp    # Main chess engine
+│   │   └── game_state.cpp # Game state management
+│   ├── ui/                # User interface implementations
+│   │   └── command_line_display.cpp # Terminal interface
+│   ├── utils/             # Utility classes
+│   ├── pieces/            # Piece implementations
+│   └── board/             # Board-related classes
+├── main.cpp               # Entry point (uses CommandLineDisplay)
+└── Makefile              # Build configuration
 ```
 
-## Architecture Improvements
+## Architecture Benefits
 
-The refactored codebase provides several benefits:
+### 1. **Clean Separation of Concerns**
+- **ChessPP**: Pure chess logic, no UI dependencies
+- **CommandLineDisplay**: UI handling, uses ChessPP as engine
+- Easy to create alternative interfaces (GUI, web, mobile)
 
-### 1. **Separation of Concerns**
-- **Move parsing** is handled by `MoveParser` class
-- **Move validation** is centralized in `MoveValidator` class
-- **Display logic** is separated in `BoardRenderer` class
-- **Game state** is managed by `GameState` class
+### 2. **Engine Reusability**
+- ChessPP can be used in any application
+- Perfect for AI development, analysis tools, or different UIs
+- Comprehensive API for all chess operations
 
-### 2. **Reduced Code Duplication**
-- `SlidingPiece` base class eliminates duplication between Rook, Bishop, and Queen
-- `PathValidator` centralizes path-checking logic
-- Common movement patterns are reused across pieces
+### 3. **Easy Testing**
+- Engine logic can be tested independently
+- UI behavior can be tested separately
+- Clear interfaces make unit testing straightforward
 
-### 3. **Better Testability**
-- Each class has a single responsibility
-- Dependencies are clearly defined
-- Logic is separated from I/O operations
+### 4. **Extensibility**
+- Add new UI types without touching engine code
+- Enhance engine features without affecting existing UIs
+- Plugin-style architecture for different interfaces
 
-### 4. **Easier Navigation**
-- Related functionality is grouped in logical directories
-- Header files clearly define interfaces
-- Implementation details are separated from declarations
+## ChessPP Engine API
+
+The chess engine provides a clean, comprehensive API:
+
+```cpp
+class ChessPP {
+public:
+    // Core functionality
+    MoveResult makeMove(const std::string& moveStr);
+    MoveResult makeMove(const Move& move);
+    
+    // Game state queries
+    GameStatus getGameStatus() const;
+    Color getCurrentPlayer() const;
+    bool isGameOver() const;
+    
+    // Board access
+    const ChessBoard& getBoard() const;
+    const Piece* getPieceAt(const Position& pos) const;
+    
+    // Move validation
+    bool isValidMove(const std::string& moveStr) const;
+    std::vector<Move> getPossibleMoves() const;
+    
+    // Game control
+    void resetGame();
+    void endGame(const std::string& result);
+};
+```
 
 ## Compilation
 
@@ -136,27 +182,42 @@ The refactored codebase provides several benefits:
 - `G8-F6` - Move black knight from G8 to F6
 - `D1 H5` - Move white queen from D1 to H5
 
-## Error Messages
-
-The game provides helpful error messages for:
-- Invalid move format
-- Invalid coordinates
-- No piece at source position
-- Moving opponent's piece
-- Capturing your own piece
-- Invalid moves for specific piece types
-- Moves that would result in check
-
 ## Development
 
-### Adding New Features
+### Using ChessPP in Your Own Projects
 
-The modular structure makes it easy to extend the game:
+The ChessPP engine can be easily integrated into your own applications:
 
-- **New piece types**: Inherit from `Piece` or `SlidingPiece`
-- **New move types**: Extend the `MoveType` enum and update `MoveValidator`
-- **New display options**: Modify `BoardRenderer` class
-- **New game modes**: Extend `GameState` class
+```cpp
+#include "chesspp.h"
+
+int main() {
+    ChessPP engine;
+    
+    // Make moves
+    MoveResult result = engine.makeMove("E2->E4");
+    if (result == MoveResult::SUCCESS) {
+        // Move was successful
+        std::cout << "Current player: " << (engine.getCurrentPlayer() == Color::WHITE ? "White" : "Black") << std::endl;
+    }
+    
+    // Check game status
+    GameStatus status = engine.getGameStatus();
+    if (status == GameStatus::CHECK) {
+        std::cout << "King is in check!" << std::endl;
+    }
+    
+    return 0;
+}
+```
+
+### Creating Alternative UIs
+
+To create a new interface (GUI, web, etc.), simply:
+1. Include `chesspp.h`
+2. Create an instance of `ChessPP`
+3. Use the engine's API for all chess operations
+4. Handle display and input in your preferred framework
 
 ### Code Quality
 
@@ -166,15 +227,6 @@ The refactored codebase follows modern C++ best practices:
 - Const-correctness
 - Clear separation of interface and implementation
 - Minimal dependencies between classes
-
-## Testing
-
-The game has been successfully compiled and tested with the new architecture. You should see:
-- A welcome message and instructions
-- A properly formatted chess board with pieces in starting positions
-- Responsive input handling for moves and commands
-- Clear error messages for invalid moves
-
-The modular structure also makes unit testing much easier, as each component can be tested independently.
+- **Zero coupling between engine and UI**
 
 Enjoy your game of chess! 

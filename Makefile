@@ -10,7 +10,6 @@ SOURCES = main.cpp \
           $(SRCDIR)/utils/move_parser.cpp \
           $(SRCDIR)/utils/path_validator.cpp \
           $(SRCDIR)/utils/move_validator.cpp \
-          $(SRCDIR)/utils/board_renderer.cpp \
           $(SRCDIR)/pieces/sliding_piece.cpp \
           $(SRCDIR)/pieces/pawn.cpp \
           $(SRCDIR)/pieces/rook.cpp \
@@ -20,7 +19,8 @@ SOURCES = main.cpp \
           $(SRCDIR)/pieces/king.cpp \
           $(SRCDIR)/board/chessboard.cpp \
           $(SRCDIR)/game/game_state.cpp \
-          $(SRCDIR)/game/chess_game.cpp
+          $(SRCDIR)/game/chesspp.cpp \
+          $(SRCDIR)/ui/command_line_display.cpp
 
 # Object files
 OBJECTS = $(SOURCES:.cpp=.o)
@@ -54,7 +54,6 @@ PERF_SOURCES = performance_test.cpp \
                $(SRCDIR)/utils/move_parser.cpp \
                $(SRCDIR)/utils/path_validator.cpp \
                $(SRCDIR)/utils/move_validator.cpp \
-               $(SRCDIR)/utils/board_renderer.cpp \
                $(SRCDIR)/pieces/sliding_piece.cpp \
                $(SRCDIR)/pieces/pawn.cpp \
                $(SRCDIR)/pieces/rook.cpp \
@@ -64,7 +63,7 @@ PERF_SOURCES = performance_test.cpp \
                $(SRCDIR)/pieces/king.cpp \
                $(SRCDIR)/board/chessboard.cpp \
                $(SRCDIR)/game/game_state.cpp \
-               $(SRCDIR)/game/chess_game.cpp
+               $(SRCDIR)/game/chesspp.cpp
 
 PERF_OBJECTS = $(PERF_SOURCES:.cpp=.o)
 

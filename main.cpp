@@ -1,7 +1,7 @@
-#include "include/chess_game.h"
+#include "include/command_line_display.h"
 
 int main() {
-    ChessGame game;
+    CommandLineDisplay game;
     game.play();
     return 0;
 } 

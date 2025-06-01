@@ -2,7 +2,7 @@
 echo Compiling Chess Game...
 
 REM Define source files
-set SOURCES=main.cpp src/utils/move.cpp src/utils/move_parser.cpp src/utils/path_validator.cpp src/utils/move_validator.cpp src/utils/board_renderer.cpp src/pieces/sliding_piece.cpp src/pieces/pawn.cpp src/pieces/rook.cpp src/pieces/knight.cpp src/pieces/bishop.cpp src/pieces/queen.cpp src/pieces/king.cpp src/board/chessboard.cpp src/game/game_state.cpp src/game/chess_game.cpp
+set SOURCES=main.cpp src/utils/move.cpp src/utils/move_parser.cpp src/utils/path_validator.cpp src/utils/move_validator.cpp src/pieces/sliding_piece.cpp src/pieces/pawn.cpp src/pieces/rook.cpp src/pieces/knight.cpp src/pieces/bishop.cpp src/pieces/queen.cpp src/pieces/king.cpp src/board/chessboard.cpp src/game/game_state.cpp src/game/chesspp.cpp src/ui/command_line_display.cpp
 
 REM Try g++ first (MinGW)
 where g++ >nul 2>&1
